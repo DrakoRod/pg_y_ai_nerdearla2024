@@ -27,5 +27,5 @@ $ pip install -r requeriments.txt
 
 
  ```
- docker run -e POSTGRES_PASSWORD=UltraSuperSecretote -p 5444:5432 --name test_ai pgvector/pgvector:pg16
+ docker run -e POSTGRES_PASSWORD=UltraSuperSecretote -p 5444:5432 --name draks_bot_db pgvector/pgvector:pg16
  ```

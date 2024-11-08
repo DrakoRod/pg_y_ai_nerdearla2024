@@ -1,3 +1,5 @@
 openai
 psycopg2-binary
 numpy
+matplotlib
+scikit-learn

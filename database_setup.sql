@@ -1,12 +1,12 @@
-CREATE USER user_ai WITH PASSWORD 'UltraSuperSecretote';
+CREATE USER draks_bot_user WITH PASSWORD 'UltraSuperSecretote';
 
-CREATE DATABASE db_ai OWNER user_ai;
+CREATE DATABASE draks_bot_db OWNER draks_bot_user;
 
-\c db_ai postgres
+\c draks_bot_db postgres
 
 CREATE EXTENSION IF NOT EXISTS vector;
 
-\c db_ai user_ai
+\c draks_bot_db draks_bot_user
 
 CREATE TABLE faqs (
   id SERIAL PRIMARY KEY,

@@ -7,10 +7,19 @@ import csv
 openai.api_key = ""
 
 class DraksBotCLI(cmd.Cmd):
-    prompt = '>> '
+    prompt = 'DraksBot => '
     intro = """
-        Bienvenido a DraksBot. Escribe "help" para ver los comandos disponibles
-        Solo debes de preguntar y te contestará tus preguntas.
+
+██████╗ ██████╗  █████╗ ██╗  ██╗███████╗██████╗  ██████╗ ████████╗
+██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██╔════╝██╔══██╗██╔═══██╗╚══██╔══╝
+██║  ██║██████╔╝███████║█████╔╝ ███████╗██████╔╝██║   ██║   ██║   
+██║  ██║██╔══██╗██╔══██║██╔═██╗ ╚════██║██╔══██╗██║   ██║   ██║   
+██████╔╝██║  ██║██║  ██║██║  ██╗███████║██████╔╝╚██████╔╝   ██║   
+╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═════╝  ╚═════╝    ╚═╝   
+                                                                  
+
+Bienvenido a DraksBot. Escribe "help" para ver los comandos disponibles
+Si ya actualizaste la base de datos solo debes de preguntar y te contestará tus preguntas.
     """
 
     def do_saluda(self, line):
@@ -22,17 +31,17 @@ class DraksBotCLI(cmd.Cmd):
 
     def do_salir(self, line):
         """Exit del Robot."""
+        print("Cómo dice mi mamá: 'Hasta luego bay!'")
         return True
     
     def do_carga_dataset(self, line):
         """
             Carga las preguntas como embeddings dentro de la base de datos.
-
         """
 
         print("Carganding el dataset de las preguntas frecuentas")
         try:
-            conn = psycopg2.connect("host=localhost dbname=db_ai user=user_ai port=5444 password=UltraSuperSecretote")
+            conn = psycopg2.connect("host=localhost dbname=draks_bot_db user=draks_bot_user port=5444 password=UltraSuperSecretote")
             cur = conn.cursor()
 
             with open('dataset.csv', mode ='r') as csvfile:
@@ -42,7 +51,7 @@ class DraksBotCLI(cmd.Cmd):
                     answer   = row[1]
                     embedding = self.get_embedding(question)
                     cur.execute("INSERT INTO faqs (question, answer, embedding) VALUES (%s, %s, %s)", (question, answer, embedding))
-                    print(".")
+                    print("." ,end=" ")
                 conn.commit()
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
@@ -52,33 +61,33 @@ class DraksBotCLI(cmd.Cmd):
 
         print("La base de datos de preguntas a sido actualizada")
 
-    def do_pregunta(self, pregunta):
+    def default(self, pregunta):
         """
             Realiza una pregunta sobre el FAQs a DraksBot
         """
         try:
-            conn = psycopg2.connect("host=localhost dbname=db_ai user=user_ai port=5444 password=UltraSuperSecretote")
+            conn = psycopg2.connect("host=localhost dbname=draks_bot_db user=draks_bot_user port=5444 password=UltraSuperSecretote")
             cur = conn.cursor()
             limit = 1
             query_embedding = self.get_embedding(pregunta)
             query = """
-                SELECT answer, embedding <-> %s::vector AS distance
-                FROM faqs
-                ORDER BY distance
+                SELECT answer, embedding <+> %s::vector AS distance
+                    FROM faqs
+                    ORDER BY distance
                 LIMIT %s
             """
             cur.execute(query, (query_embedding, limit))
-            r = cur.fetchall()
+            result = cur.fetchall()
 
-            print("Respuesta:", r['answer'])
-            print("Precisión de respuesta:", r['embedding'])
+            for row in result:
+                print(f"Respuesta: {row[0]}", )
+                print(f"Precisión de respuesta: {row[1]}")
+
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
         finally:
             cur.close()
             conn.close()
-
-        
 
     # Function to get embeddings from OpenAI
     # text-embedding-ada-002 (old)
