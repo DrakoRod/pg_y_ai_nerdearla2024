@@ -81,7 +81,7 @@ Si ya actualizaste la base de datos solo debes de preguntar y te contestará tus
 
             for row in result:
                 print(f"Respuesta: {row[0]}", )
-                print(f"Precisión de respuesta: {row[1]}")
+                print(f"Distancia: {row[1]}")
 
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
